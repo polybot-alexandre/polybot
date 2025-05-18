@@ -17,6 +17,11 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
+# Mapeamento de número para idioma
+language_map = {
+    "+5527988418585": "fr"  # Altere para seu número e idioma desejado
+}
+
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp():
     try:
@@ -28,16 +33,44 @@ def whatsapp():
         print(f"📥 Mensagem recebida: {incoming_msg}")
         print(f"📱 De: {from_number}")
 
-        idioma = "en"
-        system_lang = "English"
-        if "francês" in incoming_msg.lower():
-            idioma = "fr"
-            system_lang = "French"
-        elif "espanhol" in incoming_msg.lower():
-            idioma = "es"
-            system_lang = "Spanish"
+        # Detectar idioma baseado no número
+        idioma = language_map.get(from_number, "en")
+        system_lang = {
+            "en": "English",
+            "fr": "French",
+            "es": "Spanish"
+        }.get(idioma, "English")
 
-        # System prompt atualizado com contexto e idioma correto
+        # Caso o número não esteja mapeado, pedir escolha de idioma
+        if from_number not in language_map:
+            texto = (
+                "Hello! Please reply with the language you want to practice:
+"
+                "- Type 'english' for English 🇺🇸
+"
+                "- Type 'french' for French 🇫🇷
+"
+                "- Type 'spanish' for Spanish 🇪🇸"
+            )
+            tts = gTTS(text=texto, lang="en")
+            audio_path = "/tmp/resposta.mp3"
+            tts.save(audio_path)
+            uploaded = cloudinary.uploader.upload(audio_path, resource_type="raw")
+            audio_url = uploaded.get("secure_url")
+
+            client_twilio = Client(
+                os.getenv("TWILIO_ACCOUNT_SID"),
+                os.getenv("TWILIO_AUTH_TOKEN")
+            )
+
+            client_twilio.messages.create(
+                from_=os.getenv("TWILIO_PHONE_NUMBER"),
+                to=from_number,
+                media_url=[audio_url]
+            )
+            return "Idioma não definido. Mensagem de orientação enviada."
+
+        # System prompt refinado com idioma garantido
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -45,10 +78,8 @@ def whatsapp():
                     "role": "system",
                     "content": (
                         f"You are a native {system_lang} teacher. "
-                        f"You are chatting with a student. "
-                        f"Always respond ONLY in {system_lang}, informally, as if you're speaking. "
-                        f"Never repeat the student's question. Continue the conversation naturally, even across multiple messages. "
-                        f"Correct mistakes subtly as you go."
+                        f"Respond ONLY in {system_lang}, in a natural, informal, conversational tone. "
+                        f"Don't repeat the student's input. Just keep the conversation going."
                     )
                 },
                 {
@@ -60,7 +91,7 @@ def whatsapp():
         resposta_texto = response.choices[0].message.content.strip()
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
-        # Gerar áudio com gTTS
+        # gTTS com idioma certo
         tts = gTTS(text=resposta_texto, lang=idioma)
         audio_path = "/tmp/resposta.mp3"
         tts.save(audio_path)
