@@ -50,3 +50,7 @@ def whatsapp():
         f.write(audio_response.content)
 
     return "Mensagem recebida"
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
