@@ -37,16 +37,18 @@ def whatsapp():
             idioma = "es"
             system_lang = "Spanish"
 
-        # System prompt para forçar idioma e estilo
+        # System prompt atualizado com contexto e idioma correto
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        f"You are a native {system_lang} language tutor. "
-                        f"Always reply ONLY in {system_lang}, using a natural, informal, conversational tone. "
-                        f"NEVER repeat the student's question. Just continue the conversation naturally, correcting mistakes if needed."
+                        f"You are a native {system_lang} teacher. "
+                        f"You are chatting with a student. "
+                        f"Always respond ONLY in {system_lang}, informally, as if you're speaking. "
+                        f"Never repeat the student's question. Continue the conversation naturally, even across multiple messages. "
+                        f"Correct mistakes subtly as you go."
                     )
                 },
                 {
