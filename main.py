@@ -65,7 +65,7 @@ def whatsapp():
             f.write(audio_response.content)
         print("✅ Áudio gerado com sucesso")
 
-        uploaded = cloudinary.uploader.upload_large(audio_path, resource_type="video")
+        uploaded = cloudinary.uploader.upload(audio_path, resource_type="raw")
         audio_url = uploaded.get("secure_url")
         print(f"🌐 Áudio disponível em: {audio_url}")
 
