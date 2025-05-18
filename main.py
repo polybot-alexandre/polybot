@@ -44,8 +44,7 @@ def whatsapp():
         # Caso o número não esteja mapeado, pedir escolha de idioma
         if from_number not in language_map:
             texto = (
-                "Hello! Please reply with the language you want to practice:
-"
+                "Hello! Please reply with the language you want to practice:\n"
                 "- Type 'english' for English 🇺🇸\n"
                 "- Type 'french' for French 🇫🇷\n"
                 "- Type 'spanish' for Spanish 🇪🇸"
