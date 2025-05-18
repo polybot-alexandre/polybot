@@ -46,10 +46,8 @@ def whatsapp():
             texto = (
                 "Hello! Please reply with the language you want to practice:
 "
-                "- Type 'english' for English 🇺🇸
-"
-                "- Type 'french' for French 🇫🇷
-"
+                "- Type 'english' for English 🇺🇸\n"
+                "- Type 'french' for French 🇫🇷\n"
                 "- Type 'spanish' for Spanish 🇪🇸"
             )
             tts = gTTS(text=texto, lang="en")
