@@ -1,12 +1,12 @@
 from flask import Flask, request
-import openai
+from openai import OpenAI
 import requests
 import os
 import traceback
 
 app = Flask(__name__)
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 eleven_api_key = os.getenv("ELEVENLABS_API_KEY")
 twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
 
@@ -28,11 +28,11 @@ def whatsapp():
             idioma = "spanish"
 
         prompt = f"Você é um professor nativo de {idioma}. Corrija e continue esta conversa: {incoming_msg}"
-        gpt_response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
-        resposta_texto = gpt_response.choices[0].message.content
+        resposta_texto = response.choices[0].message.content
 
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
