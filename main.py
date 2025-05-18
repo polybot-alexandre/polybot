@@ -22,27 +22,35 @@ def whatsapp():
     try:
         print("🔵 Requisição recebida no /whatsapp")
 
-        incoming_msg = request.form.get("Body")
+        incoming_msg = request.form.get("Body", "").strip()
         from_number = request.form.get("From")
 
         print(f"📥 Mensagem recebida: {incoming_msg}")
         print(f"📱 De: {from_number}")
 
+        # Detectar idioma solicitado
         idioma = "en"
         if "francês" in incoming_msg.lower():
             idioma = "fr"
         elif "espanhol" in incoming_msg.lower():
             idioma = "es"
 
-        prompt = f"Você é um professor nativo de {idioma}. Corrija e continue esta conversa: {incoming_msg}"
+        # Ajuste de prompt para evitar repetições
+        prompt = (
+            f"Você é um professor nativo de {idioma}. "
+            f"Responda de forma natural e informal, com foco em conversação cotidiana. "
+            f"Evite repetir a pergunta original e siga o diálogo com correções quando necessário. "
+            f"Mensagem do aluno: {incoming_msg}"
+        )
+
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
-        resposta_texto = response.choices[0].message.content
+        resposta_texto = response.choices[0].message.content.strip()
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
-        # Gerar áudio com gTTS
+        # Gerar áudio com gTTS no idioma correto
         tts = gTTS(text=resposta_texto, lang=idioma)
         audio_path = "/tmp/resposta.mp3"
         tts.save(audio_path)
