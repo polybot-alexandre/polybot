@@ -42,11 +42,8 @@ def whatsapp():
         resposta_texto = response.choices[0].message.content
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
-        voice_id = {
-            "english": "21m00Tcm4TlvDq8ikWAM",
-            "french": "TxGEqnHWrfWFTfGW9XjX",
-            "spanish": "MF3mGyEYCl7XYWbV9V6O"
-        }[idioma]
+        # Voice ID testado e funcional (Rachel)
+        voice_id = "EXAVITQu4vr4xnSDxMaL"
 
         audio_response = requests.post(
             f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
@@ -60,7 +57,7 @@ def whatsapp():
             }
         )
 
-        audio_path = f"/tmp/resposta_{idioma}.mp3"
+        audio_path = "/tmp/resposta.mp3"
         with open(audio_path, "wb") as f:
             f.write(audio_response.content)
         print("✅ Áudio gerado com sucesso")
