@@ -43,7 +43,7 @@ def whatsapp():
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
         voice_id = {
-            "english": "EXAVITQu4vr4xnSDxMaL",
+            "english": "21m00Tcm4TlvDq8ikWAM",
             "french": "TxGEqnHWrfWFTfGW9XjX",
             "spanish": "MF3mGyEYCl7XYWbV9V6O"
         }[idioma]
