@@ -1,5 +1,8 @@
 from flask import Flask, request
 from openai import OpenAI
+from twilio.rest import Client
+import cloudinary
+import cloudinary.uploader
 import requests
 import os
 import traceback
@@ -7,8 +10,12 @@ import traceback
 app = Flask(__name__)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-eleven_api_key = os.getenv("ELEVENLABS_API_KEY")
-twilio_number = os.getenv("TWILIO_PHONE_NUMBER")
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp():
@@ -33,7 +40,6 @@ def whatsapp():
             messages=[{"role": "user", "content": prompt}]
         )
         resposta_texto = response.choices[0].message.content
-
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
         voice_id = {
@@ -45,7 +51,7 @@ def whatsapp():
         audio_response = requests.post(
             f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
             headers={
-                "xi-api-key": eleven_api_key,
+                "xi-api-key": os.getenv("ELEVENLABS_API_KEY"),
                 "Content-Type": "application/json"
             },
             json={
@@ -57,9 +63,24 @@ def whatsapp():
         audio_path = f"/tmp/resposta_{idioma}.mp3"
         with open(audio_path, "wb") as f:
             f.write(audio_response.content)
-
         print("✅ Áudio gerado com sucesso")
 
+        uploaded = cloudinary.uploader.upload_large(audio_path, resource_type="video")
+        audio_url = uploaded.get("secure_url")
+        print(f"🌐 Áudio disponível em: {audio_url}")
+
+        client_twilio = Client(
+            os.getenv("TWILIO_ACCOUNT_SID"),
+            os.getenv("TWILIO_AUTH_TOKEN")
+        )
+
+        client_twilio.messages.create(
+            from_=os.getenv("TWILIO_PHONE_NUMBER"),
+            to=from_number,
+            media_url=[audio_url]
+        )
+
+        print("📤 Mensagem de voz enviada com sucesso via Twilio")
         return "Mensagem processada com sucesso"
     except Exception as e:
         print("❌ Erro no processamento:")
