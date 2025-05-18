@@ -3,7 +3,7 @@ from openai import OpenAI
 from twilio.rest import Client
 import cloudinary
 import cloudinary.uploader
-import requests
+from gtts import gTTS
 import os
 import traceback
 
@@ -28,11 +28,11 @@ def whatsapp():
         print(f"📥 Mensagem recebida: {incoming_msg}")
         print(f"📱 De: {from_number}")
 
-        idioma = "english"
+        idioma = "en"
         if "francês" in incoming_msg.lower():
-            idioma = "french"
+            idioma = "fr"
         elif "espanhol" in incoming_msg.lower():
-            idioma = "spanish"
+            idioma = "es"
 
         prompt = f"Você é um professor nativo de {idioma}. Corrija e continue esta conversa: {incoming_msg}"
         response = client.chat.completions.create(
@@ -42,25 +42,11 @@ def whatsapp():
         resposta_texto = response.choices[0].message.content
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
-        # Voice ID testado e funcional (Rachel)
-        voice_id = "EXAVITQu4vr4xnSDxMaL"
-
-        audio_response = requests.post(
-            f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
-            headers={
-                "xi-api-key": os.getenv("ELEVENLABS_API_KEY"),
-                "Content-Type": "application/json"
-            },
-            json={
-                "text": resposta_texto,
-                "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
-            }
-        )
-
+        # Gerar áudio com gTTS
+        tts = gTTS(text=resposta_texto, lang=idioma)
         audio_path = "/tmp/resposta.mp3"
-        with open(audio_path, "wb") as f:
-            f.write(audio_response.content)
-        print("✅ Áudio gerado com sucesso")
+        tts.save(audio_path)
+        print("✅ Áudio gerado com gTTS com sucesso")
 
         uploaded = cloudinary.uploader.upload(audio_path, resource_type="raw")
         audio_url = uploaded.get("secure_url")

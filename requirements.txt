@@ -1,7 +1,7 @@
 flask
 openai>=1.0.0
-requests
 twilio
 cloudinary
+gtts
 python-dotenv
 gunicorn
