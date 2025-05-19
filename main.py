@@ -61,13 +61,8 @@ def whatsapp():
                 "Olá! Por favor escolha o idioma que deseja praticar:\n"
                 "- Digite 'english' para Inglês 🇺🇸\n"
                 "- Digite 'french' para Francês 🇫🇷\n"
-            )
-"
-                "- Digite 'english' para Inglês 🇺🇸
-"
-                "- Digite 'french' para Francês 🇫🇷
-"
                 "- Digite 'spanish' para Espanhol 🇪🇸"
+            )
             )
             tts = gTTS(text=texto, lang="pt")
             audio_path = "/tmp/resposta.mp3"
@@ -144,6 +139,7 @@ from gtts import gTTS
 LANGUAGE_MAP = {
     "english": "en",
     "french": "fr",
+    "spanish": "es",
     "portuguese": "pt",
 }
 
