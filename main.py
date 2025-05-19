@@ -41,9 +41,29 @@ def whatsapp():
 
         incoming_msg = request.form.get("Body", "").strip().lower()
         from_number = request.form.get("From")
+        num_media = int(request.form.get("NumMedia", 0))
+        if not incoming_msg and num_media > 0:
+            media_url = request.form.get("MediaUrl0")
+            media_type = request.form.get("MediaContentType0")
+            print(f"🎙️ Áudio recebido: {media_url} ({media_type})")
+            from requests.auth import HTTPBasicAuth
+            import requests
+            audio_response = requests.get(media_url, auth=HTTPBasicAuth(os.getenv("TWILIO_ACCOUNT_SID"), os.getenv("TWILIO_AUTH_TOKEN")))
+            with open("/tmp/input.ogg", "wb") as f:
+                f.write(audio_response.content)
+            from pydub import AudioSegment
+            AudioSegment.from_file("/tmp/input.ogg").export("/tmp/input.mp3", format="mp3")
+            import openai
+            with open("/tmp/input.mp3", "rb") as f:
+                transcript = openai.audio.transcriptions.create(model="whisper-1", file=f)
+            incoming_msg = transcript.text.strip().lower()
+            print(f"📝 Transcrição do áudio: {incoming_msg}")
 
         print(f"📥 Mensagem recebida: {incoming_msg}")
         print(f"📱 De: {from_number}")
+        if not incoming_msg:
+            print("⚠️ Mensagem vazia recebida, ignorando.")
+            return "Mensagem vazia recebida", 200
 
         if incoming_msg in ["english", "french", "spanish"]:
             lang_code = {"english": "en", "french": "fr", "spanish": "es"}[incoming_msg]
