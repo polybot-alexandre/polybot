@@ -51,12 +51,9 @@ def whatsapp():
 
         if from_number not in user_language_choice:
             texto = (
-                "Olá! Por favor escolha o idioma que deseja praticar:
-"
-                "- Digite 'english' para Inglês 🇺🇸
-"
-                "- Digite 'french' para Francês 🇫🇷
-"
+                "Olá! Por favor escolha o idioma que deseja praticar:\n"
+                "- Digite 'english' para Inglês 🇺🇸\n"
+                "- Digite 'french' para Francês 🇫🇷\n"
                 "- Digite 'spanish' para Espanhol 🇪🇸"
             )
             tts = gTTS(text=texto, lang="pt")
@@ -123,6 +120,9 @@ def whatsapp():
         traceback.print_exc()
         return "Erro no processamento", 500
 
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
