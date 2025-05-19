@@ -92,7 +92,7 @@ def whatsapp():
                     "content": (
                         f"You are a native {system_lang} teacher having a casual conversation with a student. "
                         f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
-                        f"Continue the conversation, don't repeat your previous message, and respond with a new idea or question."
+                        f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
                     )
                 },
                 {
