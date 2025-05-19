@@ -119,6 +119,10 @@ def whatsapp():
         historico = historico_conversas.get(from_number, [])
         historico.append({"role": "user", "content": incoming_msg})
         mensagens = [{"role": "system", "content": (
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=mensagens
+        )
             f"You are a native {system_lang} teacher having a casual conversation with a student. "
             f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
             f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
