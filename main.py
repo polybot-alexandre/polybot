@@ -58,7 +58,10 @@ def whatsapp():
 
         if from_number not in user_language_choice:
             texto = (
-                "Olá! Por favor escolha o idioma que deseja praticar:
+                "Olá! Por favor escolha o idioma que deseja praticar:\n"
+                "- Digite 'english' para Inglês 🇺🇸\n"
+                "- Digite 'french' para Francês 🇫🇷\n"
+            )
 "
                 "- Digite 'english' para Inglês 🇺🇸
 "
@@ -133,3 +136,19 @@ def whatsapp():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
+# ===== MULTILINGUE =====
+
+from gtts import gTTS
+
+LANGUAGE_MAP = {
+    "english": "en",
+    "french": "fr",
+    "portuguese": "pt",
+}
+
+def gerar_audio_mensagem(texto, idioma_destino='en'):
+    tts = gTTS(text=texto, lang=idioma_destino)
+    filename = f"mensagem_{idioma_destino}.mp3"
+    tts.save(filename)
+    return filename
