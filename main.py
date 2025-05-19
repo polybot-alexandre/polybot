@@ -33,7 +33,14 @@ def whatsapp():
         if incoming_msg in ["english", "french", "spanish"]:
             lang_code = {"english": "en", "french": "fr", "spanish": "es"}[incoming_msg]
             user_language_choice[from_number] = lang_code
-            resposta_texto = f"Great! Let's continue practicing {incoming_msg.capitalize()}!"
+
+            welcome_msgs = {
+                "en": "Great! Let's continue practicing English!",
+                "fr": "Génial ! Continuons à pratiquer le français !",
+                "es": "¡Genial! ¡Sigamos practicando español!"
+            }
+            resposta_texto = welcome_msgs[lang_code]
+
             tts = gTTS(text=resposta_texto, lang=lang_code)
             audio_path = "/tmp/resposta.mp3"
             tts.save(audio_path)
@@ -51,9 +58,12 @@ def whatsapp():
 
         if from_number not in user_language_choice:
             texto = (
-                "Olá! Por favor escolha o idioma que deseja praticar:\n"
-                "- Digite 'english' para Inglês 🇺🇸\n"
-                "- Digite 'french' para Francês 🇫🇷\n"
+                "Olá! Por favor escolha o idioma que deseja praticar:
+"
+                "- Digite 'english' para Inglês 🇺🇸
+"
+                "- Digite 'french' para Francês 🇫🇷
+"
                 "- Digite 'spanish' para Espanhol 🇪🇸"
             )
             tts = gTTS(text=texto, lang="pt")
@@ -80,9 +90,9 @@ def whatsapp():
                 {
                     "role": "system",
                     "content": (
-                        f"You are a native {system_lang} teacher. "
-                        f"Respond ONLY in {system_lang}, in a natural, informal, conversational tone. "
-                        f"Don't repeat the student's input. Just keep the conversation going."
+                        f"You are a native {system_lang} teacher having a casual conversation with a student. "
+                        f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
+                        f"Continue the conversation, don't repeat your previous message, and respond with a new idea or question."
                     )
                 },
                 {
@@ -120,9 +130,6 @@ def whatsapp():
         traceback.print_exc()
         return "Erro no processamento", 500
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
