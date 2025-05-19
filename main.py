@@ -58,13 +58,11 @@ def whatsapp():
 
         if from_number not in user_language_choice:
             texto = (
-                "Olá! Por favor escolha o idioma que deseja praticar:
-"
-                "- Digite 'english' para Inglês 🇺🇸
-"
-                "- Digite 'french' para Francês 🇫🇷
-"
-                "- Digite 'spanish' para Espanhol 🇪🇸"
+                "Olá! Por favor escolha o idioma que deseja praticar:\n"
+                "- Digite 'english' para Inglês 🇺🇸\n"
+                "- Digite 'french' para Francês 🇫🇷\n"
+                "- Digite 'spanish' para Espanhol 🇪🇸\n"
+            )
             )
             tts = gTTS(text=texto, lang="pt")
             audio_path = "/tmp/resposta.mp3"
