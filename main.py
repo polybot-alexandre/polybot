@@ -17,6 +17,21 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
+import json
+HISTORY_FILE = "conversas.json"
+def carregar_historico():
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return {}
+
+def salvar_historico(historico):
+    with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(historico, f, ensure_ascii=False, indent=2)
+
+historico_conversas = carregar_historico()
+
 user_language_choice = {}
 
 @app.route("/whatsapp", methods=["POST"])
@@ -81,7 +96,21 @@ def whatsapp():
         idioma = user_language_choice[from_number]
         system_lang = {"en": "English", "fr": "French", "es": "Spanish"}[idioma]
 
+        historico = historico_conversas.get(from_number, [])
+        historico.append({"role": "user", "content": incoming_msg})
+        mensagens = [{"role": "system", "content": (
+            f"You are a native {system_lang} teacher having a casual conversation with a student. "
+            f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
+            f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
+        )}] + historico
         response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=mensagens
+        )
+        resposta_texto = response.choices[0].message.content.strip()
+        historico.append({"role": "assistant", "content": resposta_texto})
+        historico_conversas[from_number] = historico
+        salvar_historico(historico_conversas)
             model="gpt-3.5-turbo",
             messages=[
                 {
