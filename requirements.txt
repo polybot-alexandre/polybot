@@ -5,5 +5,3 @@ cloudinary
 gtts
 python-dotenv
 gunicorn
-
-gtts

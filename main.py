@@ -15,6 +15,7 @@ cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
 user_language_choice = {}
 
@@ -57,10 +58,13 @@ def whatsapp():
 
         if from_number not in user_language_choice:
             texto = (
-                "Olá! Por favor escolha o idioma que deseja praticar:\n"
-                "- Digite 'english' para Inglês 🇺🇸\n"
-                "- Digite 'french' para Francês 🇫🇷\n"
-                "- Digite 'spanish' para Espanhol 🇪🇸\n"
+                "Olá! Por favor escolha o idioma que deseja praticar:
+"
+                "- Digite 'english' para Inglês 🇺🇸
+"
+                "- Digite 'french' para Francês 🇫🇷
+"
+                "- Digite 'spanish' para Espanhol 🇪🇸"
             )
             tts = gTTS(text=texto, lang="pt")
             audio_path = "/tmp/resposta.mp3"
@@ -129,20 +133,3 @@ def whatsapp():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-# ===== MULTILINGUE =====
-
-from gtts import gTTS
-
-LANGUAGE_MAP = {
-    "english": "en",
-    "french": "fr",
-    "spanish": "es",
-    "portuguese": "pt",
-}
-
-def gerar_audio_mensagem(texto, idioma_destino='en'):
-    tts = gTTS(text=texto, lang=idioma_destino)
-    filename = f"mensagem_{idioma_destino}.mp3"
-    tts.save(filename)
-    return filename
