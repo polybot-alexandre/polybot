@@ -123,8 +123,6 @@ def whatsapp():
             f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
             f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
         )}] + historico
-        response = client.chat.completions.create(
-        )
         resposta_texto = response.choices[0].message.content.strip()
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
