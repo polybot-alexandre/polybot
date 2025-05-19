@@ -104,28 +104,6 @@ def whatsapp():
             f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
         )}] + historico
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=mensagens
-        )
-        resposta_texto = response.choices[0].message.content.strip()
-        historico.append({"role": "assistant", "content": resposta_texto})
-        historico_conversas[from_number] = historico
-        salvar_historico(historico_conversas)
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        f"You are a native {system_lang} teacher having a casual conversation with a student. "
-                        f"Always respond ONLY in {system_lang}, in a natural and informal tone. "
-                        f"Continue the conversation, do not repeat your previous message, and respond with a new idea or question."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": incoming_msg
-                }
-            ]
         )
         resposta_texto = response.choices[0].message.content.strip()
         print(f"🧠 Resposta do GPT: {resposta_texto}")
