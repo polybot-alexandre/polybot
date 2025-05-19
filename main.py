@@ -61,7 +61,7 @@ def whatsapp():
                 "Olá! Por favor escolha o idioma que deseja praticar:\n"
                 "- Digite 'english' para Inglês 🇺🇸\n"
                 "- Digite 'french' para Francês 🇫🇷\n"
-                "- Digite 'spanish' para Espanhol 🇪🇸"
+                "- Digite 'spanish' para Espanhol 🇪🇸\n"
             )
             )
             tts = gTTS(text=texto, lang="pt")
