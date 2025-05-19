@@ -15,7 +15,6 @@ cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
-)
 
 user_language_choice = {}
 
@@ -62,7 +61,6 @@ def whatsapp():
                 "- Digite 'english' para Inglês 🇺🇸\n"
                 "- Digite 'french' para Francês 🇫🇷\n"
                 "- Digite 'spanish' para Espanhol 🇪🇸\n"
-            )
             )
             tts = gTTS(text=texto, lang="pt")
             audio_path = "/tmp/resposta.mp3"
