@@ -17,57 +17,66 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET")
 )
 
-# Mapeamento de número para idioma
-language_map = {
-    "+5527988418585": "fr"  # Altere para seu número e idioma desejado
-}
+user_language_choice = {}
 
 @app.route("/whatsapp", methods=["POST"])
 def whatsapp():
     try:
         print("🔵 Requisição recebida no /whatsapp")
 
-        incoming_msg = request.form.get("Body", "").strip()
+        incoming_msg = request.form.get("Body", "").strip().lower()
         from_number = request.form.get("From")
 
         print(f"📥 Mensagem recebida: {incoming_msg}")
         print(f"📱 De: {from_number}")
 
-        # Detectar idioma baseado no número
-        idioma = language_map.get(from_number, "en")
-        system_lang = {
-            "en": "English",
-            "fr": "French",
-            "es": "Spanish"
-        }.get(idioma, "English")
-
-        # Caso o número não esteja mapeado, pedir escolha de idioma
-        if from_number not in language_map:
-            texto = (
-                "Hello! Please reply with the language you want to practice:\n"
-                "- Type 'english' for English 🇺🇸\n"
-                "- Type 'french' for French 🇫🇷\n"
-                "- Type 'spanish' for Spanish 🇪🇸"
-            )
-            tts = gTTS(text=texto, lang="en")
+        if incoming_msg in ["english", "french", "spanish"]:
+            lang_code = {"english": "en", "french": "fr", "spanish": "es"}[incoming_msg]
+            user_language_choice[from_number] = lang_code
+            resposta_texto = f"Great! Let's continue practicing {incoming_msg.capitalize()}!"
+            tts = gTTS(text=resposta_texto, lang=lang_code)
             audio_path = "/tmp/resposta.mp3"
             tts.save(audio_path)
             uploaded = cloudinary.uploader.upload(audio_path, resource_type="raw")
             audio_url = uploaded.get("secure_url")
-
-            client_twilio = Client(
+            Client(
                 os.getenv("TWILIO_ACCOUNT_SID"),
                 os.getenv("TWILIO_AUTH_TOKEN")
-            )
-
-            client_twilio.messages.create(
+            ).messages.create(
                 from_=os.getenv("TWILIO_PHONE_NUMBER"),
                 to=from_number,
                 media_url=[audio_url]
             )
-            return "Idioma não definido. Mensagem de orientação enviada."
+            return "Idioma salvo com sucesso."
 
-        # System prompt refinado com idioma garantido
+        if from_number not in user_language_choice:
+            texto = (
+                "Olá! Por favor escolha o idioma que deseja praticar:
+"
+                "- Digite 'english' para Inglês 🇺🇸
+"
+                "- Digite 'french' para Francês 🇫🇷
+"
+                "- Digite 'spanish' para Espanhol 🇪🇸"
+            )
+            tts = gTTS(text=texto, lang="pt")
+            audio_path = "/tmp/resposta.mp3"
+            tts.save(audio_path)
+            uploaded = cloudinary.uploader.upload(audio_path, resource_type="raw")
+            audio_url = uploaded.get("secure_url")
+            Client(
+                os.getenv("TWILIO_ACCOUNT_SID"),
+                os.getenv("TWILIO_AUTH_TOKEN")
+            ).messages.create(
+                from_=os.getenv("TWILIO_PHONE_NUMBER"),
+                to=from_number,
+                media_url=[audio_url]
+            )
+            return "Aguardando escolha de idioma."
+
+        idioma = user_language_choice[from_number]
+        system_lang = {"en": "English", "fr": "French", "es": "Spanish"}[idioma]
+
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -88,7 +97,6 @@ def whatsapp():
         resposta_texto = response.choices[0].message.content.strip()
         print(f"🧠 Resposta do GPT: {resposta_texto}")
 
-        # gTTS com idioma certo
         tts = gTTS(text=resposta_texto, lang=idioma)
         audio_path = "/tmp/resposta.mp3"
         tts.save(audio_path)
@@ -98,12 +106,10 @@ def whatsapp():
         audio_url = uploaded.get("secure_url")
         print(f"🌐 Áudio disponível em: {audio_url}")
 
-        client_twilio = Client(
+        Client(
             os.getenv("TWILIO_ACCOUNT_SID"),
             os.getenv("TWILIO_AUTH_TOKEN")
-        )
-
-        client_twilio.messages.create(
+        ).messages.create(
             from_=os.getenv("TWILIO_PHONE_NUMBER"),
             to=from_number,
             media_url=[audio_url]
@@ -111,6 +117,7 @@ def whatsapp():
 
         print("📤 Mensagem de voz enviada com sucesso via Twilio")
         return "Mensagem processada com sucesso"
+
     except Exception as e:
         print("❌ Erro no processamento:")
         traceback.print_exc()
