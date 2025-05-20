@@ -3,5 +3,6 @@ openai>=1.0.0
 twilio
 cloudinary
 gtts
+pydub
 python-dotenv
 gunicorn
