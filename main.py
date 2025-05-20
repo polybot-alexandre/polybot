@@ -122,7 +122,7 @@ def whatsapp():
         return "Mensagem processada com sucesso"
 
     except Exception as e:
-        print("❌ Erro no processamento:")
+        print("❌ Erro no processamento:", str(e))
         traceback.print_exc()
         return "Erro no processamento", 500
 
