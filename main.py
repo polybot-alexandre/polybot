@@ -9,6 +9,7 @@ from openai import OpenAI
 from twilio.rest import Client
 import cloudinary.uploader
 from requests.auth import HTTPBasicAuth
+from gtts import gTTS
 
 app = Flask(__name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -99,7 +100,6 @@ def whatsapp():
         historico_conversas[from_number] = historico
         salvar_historico(historico_conversas)
 
-        from gtts import gTTS
         tts = gTTS(text=resposta_texto, lang=idioma[:2])
         audio_path = "/tmp/resposta.mp3"
         tts.save(audio_path)
@@ -133,6 +133,10 @@ def send_text_message(to, text):
         body=text
     )
     return "Mensagem de texto enviada"
+
+@app.route("/ping")
+def ping():
+    return "pong"
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
